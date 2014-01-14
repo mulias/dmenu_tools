@@ -1,0 +1,27 @@
+#!/bin/bash
+#
+# uses find to list all maching files, then uses xdg-open to open with default application
+#
+###
+
+DMENU='dmenu -i -b -h 18 -fn "Sans-10"'
+
+HOME='/mnt/files/eli'
+#HOME=${HOME}
+
+directory=$((echo -e 'All'; ls -d */) | $DMENU -p "Search Directory:")
+
+if [ "$directory" == 'All' ]; then
+  search_path="$HOME"
+else
+  search_path="$HOME/$directory"
+fi
+
+input=$($DMENU -p "Search Directory $search_path for:" <&-)
+
+if [ "$input" != '' ]; then
+  result=$(find $search_path -iname "*$input*" -not -path '*\/.*' | $DMENU -l 20 -p "search results:")
+  if [ "$result" != '' ]; then
+    xdg-open "$result"
+  fi
+fi

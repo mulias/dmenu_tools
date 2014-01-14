@@ -1,0 +1,25 @@
+#!/bin/bash
+#
+# runs dmenu_run with most commonly used programs listed first.
+# appending a "!" runs the command with sudo permissions
+# appending a ";" runs the command in a terminal
+# you can't do both!
+#
+###
+
+DMENU='dmenu -i -b -h 18 -fn "Sans-8"'
+TERM='urxvt -e bash -lic'
+
+CACHE="$HOME/.dmenu_cache_recent"
+
+touch $CACHE
+MOST_USED=$(sort $CACHE | uniq -c | sort -nr | colrm 1 8)
+RUN=$( (echo "$MOST_USED"; dmenu_path_c | grep -vxF "$MOST_USED") | $DMENU) && (echo $RUN; head -n199 $CACHE) > $CACHE.$$ && mv $CACHE.$$ $CACHE
+
+case $RUN in
+    *\!) gksudo ${RUN/!/} &           ;;
+    *\;) $TERM "${RUN/;/} && bash"  & ;;
+    *)   $RUN &                       ;;
+esac
+
+exit 0
