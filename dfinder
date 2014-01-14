@@ -1,6 +1,7 @@
-#!/bin/bash
+﻿#!/bin/bash
 #
-# uses find to list all maching files, then uses xdg-open to open with default application
+# uses find to list all matching files, then uses xdg-open to open with 
+# default application
 #
 ###
 

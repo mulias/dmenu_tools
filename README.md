@@ -1,12 +1,12 @@
-dmenu_tools
+﻿dmenu_tools
 ===========
 
-A collection of small scripts using [dmenu](), a simple menu building tool.
-The default functionality of dmenu is dmenu_run, which lets the user select and launch rograms that are in the path.
+A collection of small scripts using [dmenu](http://tools.suckless.org/dmenu/), a simple menu building tool.
+The default functionality of dmenu is dmenu_run, which lets the user select and launch programs that are in the path.
 
-In most cases, a dmenu script takes the output of a command, formats this output as a newline seperated list, pipes the list into dmenu, has the user select a list item, then runs a command on the list item. Dmenu is a convenient intermediary step for a user to select what they want to operate on.
+In most cases, a dmenu script takes the output of a command, formats this output as a newline separated list, pipes the list into dmenu, has the user select a list item, then runs a command on the selected item. Dmenu is a convenient intermediary step for a user to select what they want to operate on.
 
-I have absolutly no idea what I'm doing with bash, but all of these scripts run on my system. I can't promise anything more than that. 
+I have absolutely no idea what I'm doing with bash, but all of these scripts run on my system. I can't promise anything more than that. 
 
 Notes
 -----
