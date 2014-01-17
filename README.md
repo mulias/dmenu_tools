@@ -10,7 +10,6 @@ I have absolutely no idea what I'm doing with bash, but all of these scripts run
 
 Notes
 -----
-
 dexit  
 Shut down, sleep, or hibernate the system, or shut down xwindows and return to the terminal. Uses the systemd session manager, systemctl. On a non-systemd system one would need commands such as "shutdown -h 0" available without sudo.
 
@@ -19,3 +18,8 @@ Search the home directory tree for files containing a search string. Very primit
 
 dmenu_freq  
 Run dmenu with frequency of use and options for gksudo and executing in a terminal. dmenu_path_c is a faster implementation of the normal path list generator used by dmenu_run.
+
+Todo
+----
+* clean up and post dfiles (file navigator)
+* clean up and post dmusic (mpd music player)
