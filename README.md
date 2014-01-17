@@ -6,7 +6,7 @@ The default functionality of dmenu is dmenu_run, which lets the user select and 
 
 In most cases, a dmenu script takes the output of a command, formats this output as a newline separated list, pipes the list into dmenu, has the user select a list item, then runs a command on the selected item. Dmenu is a convenient intermediary step for a user to select what they want to operate on.
 
-I have absolutely no idea what I'm doing with bash, but all of these scripts run on my system. I can't promise anything more than that. 
+I have absolutely no idea what I'm doing with bash, but all of these scripts run on my system. I can't promise anything more than that. I'm using a patched version of dmenu with xft font support and height, allowing for multiple rows.
 
 Notes
 -----
