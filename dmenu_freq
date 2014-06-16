@@ -3,7 +3,6 @@
 # runs dmenu_run with most commonly used programs listed first.
 # appending a "!" runs the command with sudo permissions
 # appending a ";" runs the command in a terminal
-# you can't do both!
 #
 ###
 
@@ -14,12 +13,21 @@ CACHE="$HOME/.dmenu_cache_recent"
 
 touch $CACHE
 MOST_USED=$(sort $CACHE | uniq -c | sort -nr | colrm 1 8)
+echo $MOST_USED
+echo `dmenu_path_c | grep -vxF "$MOST_USED"`
 RUN=$( (echo "$MOST_USED"; dmenu_path_c | grep -vxF "$MOST_USED") | $DMENU) && (echo $RUN; head -n199 $CACHE) > $CACHE.$$ && mv $CACHE.$$ $CACHE
 
 case $RUN in
-    *\!) gksudo ${RUN/!/} &           ;;
-    *\;) $TERM "${RUN/;/} && bash"  & ;;
-    *)   $RUN &                       ;;
+    *\!\;) $TERM "sudo ${RUN/!;/} && bash"  &
+      ;;
+    *\;\!) $TERM "sudo ${RUN/;!/} && bash"  &
+      ;;
+    *\!)   gksudo ${RUN/!/} &
+      ;;
+    *\;)   $TERM "${RUN/;/} && bash"  &
+      ;;
+    *)     $RUN &
+      ;;
 esac
 
 exit 0
