@@ -29,8 +29,10 @@ case $RUN in
 esac
 
 eval $exec
-if [ $? -eq 0 ]; then
+if [[ $? == 0 ]]; then
   (echo $RUN; head -n199 $CACHE) > $CACHE.$$ && mv $CACHE.$$ $CACHE
+else
+  exit 1
 fi
 
 exit 0
