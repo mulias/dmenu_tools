@@ -6,28 +6,31 @@
 #
 ###
 
-DMENU='dmenu -i -b -h 18 -fn "Sans-8"'
-TERM='urxvt -e bash -lic'
+DMENU='dmenu -z -b -h 18 -fn "Sans-8"'
+TERM='urxvt -e bash -ic'
 
 CACHE="$HOME/.dmenu_cache_recent"
-
 touch $CACHE
+
 MOST_USED=$(sort $CACHE | uniq -c | sort -nr | colrm 1 8)
-echo $MOST_USED
-echo `dmenu_path_c | grep -vxF "$MOST_USED"`
-RUN=$( (echo "$MOST_USED"; dmenu_path_c | grep -vxF "$MOST_USED") | $DMENU) && (echo $RUN; head -n199 $CACHE) > $CACHE.$$ && mv $CACHE.$$ $CACHE
+RUN=$( (echo "$MOST_USED"; dmenu_path_c | grep -vxF "$MOST_USED") | $DMENU )
 
 case $RUN in
-    *\!\;) $TERM "sudo ${RUN/!;/} && bash"  &
+    *\!\;) exec="$TERM 'sudo ${RUN/!;/} && bash'"
       ;;
-    *\;\!) $TERM "sudo ${RUN/;!/} && bash"  &
+    *\;\!) exec="$TERM 'sudo ${RUN/;!/} && bash'"
       ;;
-    *\!)   gksudo ${RUN/!/} &
+    *\!)   exec="gksudo ${RUN/!/}"
       ;;
-    *\;)   $TERM "${RUN/;/} && bash"  &
+    *\;)   exec="$TERM '${RUN/;/} && bash'"
       ;;
-    *)     $RUN &
+    *)     exec="$RUN"
       ;;
 esac
+
+eval $exec
+if [ $? -eq 0 ]; then
+  (echo $RUN; head -n199 $CACHE) > $CACHE.$$ && mv $CACHE.$$ $CACHE
+fi
 
 exit 0
