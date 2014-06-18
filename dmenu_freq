@@ -6,7 +6,7 @@
 #
 ###
 
-DMENU='dmenu -z -b -h 18 -fn "Sans-8"'
+DMENU='dmenu -i -b -h 18 -fn "Sans-8"'
 TERM='urxvt -e bash -ic'
 
 CACHE="$HOME/.dmenu_cache_recent"
