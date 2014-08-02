@@ -9,7 +9,7 @@
 DMENU='dmenu -i -b -h 18 -fn "Sans-8"'
 TERM='urxvt -e bash -ic'
 
-CACHE="$HOME/.dmenu_cache_recent"
+CACHE="$HOME/.cache/dmenu_freq.cache"
 touch $CACHE
 
 MOST_USED=$(sort $CACHE | uniq -c | sort -nr | colrm 1 8)
