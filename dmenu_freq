@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #
 # runs dmenu_run with most commonly used programs listed first.
 # appending a "!" runs the command with sudo permissions
