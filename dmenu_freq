@@ -1,36 +1,75 @@
 #!/usr/bin/env bash
 #
-# runs dmenu_run with most commonly used programs listed first.
+# list most commonly used applications in a dmenu launcher
+# if the desired program is not listed, select --ALL-PROGRAMS-- to view all
 # appending a "!" runs the command with sudo permissions
 # appending a ";" runs the command in a terminal
+#
+# aliases are not accessable from a shell script, so the alias
+# list needs to be populated manually
+# if you would like to run aliases from dmenu, use
+# in bash:
+# echo $(alias | awk '{print $2}' | sed 's;=.*;;') > "$HOME/.cache/alias_list"
+# in zsh:
+# echo $(alias | sed 's;=.*;;') > "$HOME/.cache/alias_list"
 #
 ###
 
 DMENU='dmenu -i -b -h 18 -fn "Sans-8"'
-TERM='urxvt -e bash -ic'
+TERM="urxvt -e $SHELL -ic"
 
 CACHE="$HOME/.cache/dmenu_freq.cache"
+ALIAS="$HOME/.cache/alias_list"
 touch $CACHE
+touch $ALIAS
 
-MOST_USED=$(sort $CACHE | uniq -c | sort -nr | colrm 1 8)
-RUN=$( (echo "$MOST_USED"; dmenu_path_c | grep -vxF "$MOST_USED") | $DMENU )
+# chose from most used programs
+MOST_USED=$(sort "$CACHE" | uniq | sed '/^$/d')
+run=$((echo "$MOST_USED"; echo --ALL-PROGRAMS--) | $DMENU)
 
-case $RUN in
-    *\!\;) exec="$TERM 'sudo ${RUN/!;/} && bash'"
-      ;;
-    *\;\!) exec="$TERM 'sudo ${RUN/;!/} && bash'"
-      ;;
-    *\!)   exec="gksudo ${RUN/!/}"
-      ;;
-    *\;)   exec="$TERM '${RUN/;/} && bash'"
-      ;;
-    *)     exec="$RUN"
-      ;;
+# chose from all programs
+if [[ $run == --ALL-PROGRAMS-- ]]; then
+  run=$((dmenu_path_c; cat $ALIAS) | sort | uniq | $DMENU -p "All Programs: ")
+fi
+
+# parse ; and !
+case $run in
+  *\!\;|*\;\!)
+    com="${run:0:-2}"
+    mod='!;' 
+    exec="$TERM 'sudo $com && $SHELL'"
+    ;;
+  *\!)   
+    com="${run:0:-1}"
+    mod='!'
+    exec="gksudo $com"
+    ;;
+  *\;) 
+    com="${run:0:-1}"
+    mod=';'
+    exec="$TERM '$com && $SHELL'"
+    ;;
+  *)
+    com="$run"
+    mod=''     
+    exec="$com"
+    ;;
 esac
 
-eval $exec
-if [[ $? == 0 ]]; then
-  (echo $RUN; head -n199 $CACHE) > $CACHE.$$ && mv $CACHE.$$ $CACHE
+# remove any arguments, so that only the base command is used
+base_com=$(echo $com | awk '{print $1}')
+
+# if command exists, run it
+if (type "$base_com" > /dev/null 2>&1) || (grep -Fxq "$base_com" $ALIAS); then
+  # if it isn't on the most used list, ask
+  if ! (echo "$MOST_USED" | grep -Fxq "$base_com$mod"); then
+    save=$(echo | $DMENU -p 'Save to most used? (y/N)')
+    if [[ $save == y ]]; then
+      # add to most used programs
+      (echo "$base_com$mod"; echo "$MOST_USED") > $CACHE.$$ && mv $CACHE.$$ $CACHE
+    fi
+  fi
+  eval "$exec &"
 else
   exit 1
 fi
