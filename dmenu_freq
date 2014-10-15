@@ -9,9 +9,9 @@
 # list needs to be populated manually
 # if you would like to run aliases from dmenu, use
 # in bash:
-# echo $(alias | awk '{print $2}' | sed 's;=.*;;') > "$HOME/.cache/alias_list"
+# echo $(alias | awk '{print $2}' | sed 's;=.*;;') | tr ' ' '\n' > "$HOME/.cache/alias_list"
 # in zsh:
-# echo $(alias | sed 's;=.*;;') > "$HOME/.cache/alias_list"
+# echo $(alias | sed 's;=.*;;') | tr ' ' '\n' > "$HOME/.cache/alias_list"
 #
 ###
 
@@ -71,6 +71,7 @@ if (type "$base_com" > /dev/null 2>&1) || (grep -Fxq "$base_com" $ALIAS); then
   fi
   eval "$exec &"
 else
+  echo "Unknown command $base_com"
   exit 1
 fi
 
