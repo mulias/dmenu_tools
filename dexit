@@ -5,10 +5,12 @@
 ###
 
 DMENU='dmenu -i -b -l 5 -fn "Sans-12"'
-choice=$(echo -e "shutdown\nsuspend\nhibernate\nreboot\nkill x" | $DMENU)
+choice=$(echo -e "shutdown\nhybrid\nsuspend\nhibernate\nreboot\nkill x" | dmenu_i3_style -i -b -l 5)
 
 case "$choice" in
   shutdown) systemctl poweroff
+    ;;
+  hybrid) systemctl hybrid-sleep
     ;;
   suspend) systemctl suspend
     ;;

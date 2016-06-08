@@ -1,0 +1,3 @@
+#! /usr/bin/env sh
+
+dmenu -h 19 -fn "Sans-8" -nb '#222222' -nf '#ffffff' -sb '#285577' -sf '#ffffff' $*
