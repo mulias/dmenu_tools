@@ -1,11 +1,10 @@
 #!/usr/bin/env bash
 #
-# a simple dmenu session script 
+# Simple dmenu session script.
 #
 ###
 
-DMENU='dmenu -i -b -l 5 -fn "Sans-12"'
-choice=$(echo -e "shutdown\nhybrid\nsuspend\nhibernate\nreboot\nkill x" | dmenu_i3_style -i -b -l 5)
+choices=$(echo -e "shutdown\nhybrid\nsuspend\nhibernate\nreboot\nkill x" | dmenu_i3_style -i -b -l 6)
 
 case "$choice" in
   shutdown) systemctl poweroff
@@ -18,7 +17,7 @@ case "$choice" in
     ;;
   reboot) systemctl reboot
     ;;
-  'kill x') i3-msg exit 
+  'kill x') i3-msg exit                # on a non-i3 system, try kill $(pgrep X)
 esac
 
 exit 0
