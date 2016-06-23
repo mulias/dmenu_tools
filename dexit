@@ -4,7 +4,7 @@
 #
 ###
 
-choices=$(echo -e "shutdown\nhybrid\nsuspend\nhibernate\nreboot\nkill x" | dmenu_i3_style -i -b -l 6)
+choice=$(echo -e "shutdown\nhybrid\nsuspend\nhibernate\nreboot\nkill x" | dmenu_i3_style -i -b -l 6)
 
 case "$choice" in
   shutdown) systemctl poweroff
@@ -18,6 +18,8 @@ case "$choice" in
   reboot) systemctl reboot
     ;;
   'kill x') i3-msg exit                # on a non-i3 system, try kill $(pgrep X)
+    ;;
+  *) exit 1
 esac
 
 exit 0
