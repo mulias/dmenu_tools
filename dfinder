@@ -1,19 +1,16 @@
-﻿#!/usr/bin/env bash
+#!/usr/bin/env bash
 #
 # uses find to list all matching files, then uses xdg-open to open with 
 # default application
 #
 ###
 
-DMENU='dmenu -i -b -h 18 -fn "Sans-10"'
+DMENU='dmenu_i3_style -i -b'
 
-HOME='/mnt/files/eli'
-#HOME=${HOME}
+directory=$(cd ~; (echo -e '~/'; ls -d */) | $DMENU -p "Search Directory:")
 
-directory=$((echo -e 'All'; ls -d */) | $DMENU -p "Search Directory:")
-
-if [ "$directory" == 'All' ]; then
-  search_path="$HOME"
+if [ "${directory}" == '~/' ]; then
+  search_path="${HOME}"
 else
   search_path="$HOME/$directory"
 fi
@@ -21,7 +18,7 @@ fi
 input=$($DMENU -p "Search Directory $search_path for:" <&-)
 
 if [ "$input" != '' ]; then
-  result=$(find $search_path -iname "*$input*" -not -path '*\/.*' | $DMENU -l 20 -p "search results:")
+  result=$(find -L $search_path -iname "*$input*" -not -path '*\/.*' | $DMENU -l 20 -p "Search Results:")
   if [ "$result" != '' ]; then
     xdg-open "$result"
   fi
