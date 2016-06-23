@@ -1,72 +1,54 @@
 #!/usr/bin/env bash
 #
-# list most commonly used applications in a dmenu launcher
-# if the desired program is not listed, select --ALL-PROGRAMS-- to view all
+# launch binaries through dmenu, with the option to pin most used programs to
+# the front of the search list.
 # appending a "!" runs the command with sudo permissions
 # appending a ";" runs the command in a terminal
 #
-# aliases are not accessable from a shell script, so the alias
-# list needs to be populated manually
-# if you would like to run aliases from dmenu, use
-# in bash:
-# echo $(alias | awk '{print $2}' | sed 's;=.*;;') | tr ' ' '\n' > "$HOME/.cache/alias_list"
-# in zsh:
-# echo $(alias | sed 's;=.*;;') | tr ' ' '\n' > "$HOME/.cache/alias_list"
-#
 ###
 
-DMENU='dmenu -i -b -h 18 -fn "Sans-8"'
+DMENU='dmenu_i3_style -i -b'
 TERM="urxvt -e $SHELL -ic"
 
-CACHE="$HOME/.cache/dmenu_freq.cache"
-ALIAS="$HOME/.cache/alias_list"
-touch $CACHE
-touch $ALIAS
+DMENU_PATH=$(cat ~/.cache/dmenu_run)
 
-# chose from most used programs
-MOST_USED=$(sort "$CACHE" | uniq | sed '/^$/d')
-run=$((echo "$MOST_USED"; echo --ALL-PROGRAMS--) | $DMENU)
+CACHE="$HOME/.cache/dmenu_freq"
+touch "${CACHE}"
+MOST_USED=$(sort "${CACHE}" | uniq | sed '/^$/d')
 
-# chose from all programs
-if [[ $run == --ALL-PROGRAMS-- ]]; then
-  run=$((dmenu_path_c; cat $ALIAS) | sort | uniq | $DMENU -p "All Programs: ")
-fi
+run=$((echo "${MOST_USED}"; echo "${DMENU_PATH}") | $DMENU)
 
 # parse ; and !
 case $run in
   *\!\;|*\;\!)
     com="${run:0:-2}"
-    mod='!;' 
     exec="$TERM 'sudo $com && $SHELL'"
     ;;
   *\!)   
     com="${run:0:-1}"
-    mod='!'
     exec="gksudo $com"
     ;;
   *\;) 
     com="${run:0:-1}"
-    mod=';'
     exec="$TERM '$com && $SHELL'"
     ;;
   *)
     com="$run"
-    mod=''     
     exec="$com"
     ;;
 esac
 
 # remove any arguments, so that only the base command is used
-base_com=$(echo $com | awk '{print $1}')
+base_com=$(echo "${com}" | awk '{print $1}')
 
 # if command exists, run it
-if (type "$base_com" > /dev/null 2>&1) || (grep -Fxq "$base_com" $ALIAS); then
+if (type "${base_com}" > /dev/null 2>&1); then
   # if it isn't on the most used list, ask
-  if ! (echo "$MOST_USED" | grep -Fxq "$base_com$mod"); then
+  if ! (echo "${MOST_USED}" | grep -Fxq "${base_com}"); then
     save=$(echo | $DMENU -p 'Save to most used? (y/N)')
-    if [[ $save == y ]]; then
+    if [[ "${save}" == "y" ]]; then
       # add to most used programs
-      (echo "$base_com$mod"; echo "$MOST_USED") > $CACHE.$$ && mv $CACHE.$$ $CACHE
+      (echo "${base_com}"; echo "$MOST_USED") > "${CACHE}.tmp" && mv "${CACHE}.tmp" "${CACHE}"
     fi
   fi
   eval "$exec &"
