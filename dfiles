@@ -1,0 +1,29 @@
+#!/usr/bin/env bash
+#
+# Lists directories and opens files with dmenu
+# I didn't write this, but I don't remember who did :(
+#
+####
+
+DMENU='dmenu_i3_style -i -b -l 20'
+filemanager="pcmanfm"
+executor="xdg-open"
+file=1
+
+while [ "$file" ]; do
+    file=$((echo -e '..'; ls -B --group-directories-first; echo -e "[Open in $filemanager]") | $DMENU -p "$(basename $(pwd))")
+    if [ -e "$file" ]; then
+        owd=$(pwd)
+        if $([ -d "$file" ]); then
+            cd "$file"
+        else $([ -f "$file" ])
+            if [ "$executor" ] && which "$executor" &> /dev/null; then
+                exec "$executor" "$owd/$file" &
+                unset file
+            fi
+        fi
+    elif [[ "$file" =~ '[Open in' ]]; then
+        which "$filemanager" &> /dev/null && exec "$filemanager" . &
+        unset file
+    fi
+done
